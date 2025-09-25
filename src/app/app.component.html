@@ -1,0 +1,73 @@
+<div class="shell">
+  <h1>{{ title }}</h1>
+
+  <form [formGroup]="form" class="grid">
+    <label>
+      <span>Asset Name</span>
+      <input type="text" formControlName="assetName" />
+    </label>
+
+    <label class="full">
+      <span>Specification</span>
+      <textarea rows="4" formControlName="specification"></textarea>
+    </label>
+
+    <label>
+      <span>Colour</span>
+      <input type="text" formControlName="colour" />
+    </label>
+
+    <label>
+      <span>Date</span>
+      <input type="text" placeholder="YYYY-MM-DD or any string" formControlName="date" />
+    </label>
+
+    <label>
+      <span>User</span>
+      <input type="text" formControlName="user" />
+    </label>
+
+    <label>
+      <span>Location</span>
+      <input type="text" formControlName="location" />
+    </label>
+
+    <label class="full">
+      <span>E-Mail Office Activation</span>
+      <input type="email" formControlName="emailOfficeActivation" />
+    </label>
+
+    <label class="full">
+      <span>Code Number (12 digits)</span>
+      <input type="text" formControlName="codeNumber" maxlength="12" />
+      <small *ngIf="form.get('codeNumber')?.invalid && form.get('codeNumber')?.touched">
+        Must be exactly 12 digits.
+      </small>
+    </label>
+  </form>
+
+  <div class="preview">
+    <div class="qr-wrap" #qrHost>
+      <qrcode
+        [qrdata]="qrPayload"
+        [elementType]="'canvas'"
+        [width]="300"
+        [errorCorrectionLevel]="'M'"
+        [margin]="1"
+        [colorDark]="'#000000'"
+        [colorLight]="'#FFFFFF'">
+      </qrcode>
+    </div>
+
+    <div class="payload">
+      <h3>QR Payload (JSON)</h3>
+      <pre>{{ qrPayload }}</pre>
+      <p class="hint" *ngIf="form.invalid">Form has validation errors; QR still updates but please fix before printing.</p>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button type="button" (click)="downloadQrPng()">Download QR PNG</button>
+    <button type="button" (click)="downloadStickerPng()">Download Sticker PNG</button>
+  </div>
+</div>

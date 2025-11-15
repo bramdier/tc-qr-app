@@ -3,6 +3,10 @@
 
   <form [formGroup]="form" class="grid">
     <label>
+      <span>GA Code</span>
+      <input type="text" formControlName="codeGa" />
+    </label>
+    <label>
       <span>Asset Name</span>
       <input type="text" formControlName="assetName" />
     </label>
@@ -38,7 +42,7 @@
     </label>
 
     <label class="full">
-      <span>Code Number (12 digits)</span>
+      <span>Code Number (12 digits) <span style="color: red;">*Input code without space</span></span>
       <input type="text" formControlName="codeNumber" maxlength="12" />
       <small *ngIf="form.get('codeNumber')?.invalid && form.get('codeNumber')?.touched">
         Must be exactly 12 digits.

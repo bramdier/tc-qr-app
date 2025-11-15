@@ -27,6 +27,7 @@ export class AppComponent implements AfterViewInit {
   private svc = inject(StickerQrService);
 
   form = this.fb.group({
+    codeGa: ['', Validators.required],
     assetName: ['', Validators.required],
     specification: ['', Validators.required],
     colour: ['', Validators.required],
@@ -38,6 +39,7 @@ export class AppComponent implements AfterViewInit {
   });
 
   qrPayload = this.svc.buildPayload({
+    codeGa: '',
     assetName: '',
     specification: '',
     colour: '',

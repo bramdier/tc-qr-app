@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 
 export interface AssetPayload {
+    codeGa: string;
     assetName: string;
     specification: string;
     colour: string;
@@ -15,6 +16,7 @@ export interface AssetPayload {
 export class StickerQrService {
     buildPayload(p: AssetPayload): string {
         const ordered: AssetPayload = {
+            codeGa: p.codeGa?.trim(),
             assetName: p.assetName?.trim(),
             specification: p.specification?.trim(),
             colour: p.colour?.trim(),
@@ -52,7 +54,7 @@ export class StickerQrService {
         const height = opts?.height ?? 840;
         const headerText = opts?.headerText ?? 'PROPERTY OF\nTRANS CONTINENT';
 
-        const headerH = Math.round(height * 0.18);
+        const headerH = Math.round(height * 0.30);
         const footerH = Math.round(height * 0.06);
         const bodyH = height - headerH;
 
@@ -62,8 +64,8 @@ export class StickerQrService {
         const g = out.getContext('2d')!;
         g.imageSmoothingEnabled = true;
 
-        const blue = '#0B2A5B';
-        const red = '#E02222';
+        const blue = '#0e2267';
+        const red = '#fe0000';
         const white = '#FFFFFF';
 
         // Header biru
@@ -71,8 +73,8 @@ export class StickerQrService {
         g.fillRect(0, 0, width, headerH);
 
         // Garis putih sedikit di bawah area biru
-        const whiteLineHeight = Math.round(height * 0.009); // sedikit lebih tipis
-        const whiteLineY = headerH - Math.round(whiteLineHeight * 0.3); // geser ke bawah sedikit
+        const whiteLineHeight = 7;
+        const whiteLineY = headerH - Math.round(whiteLineHeight * 0.5);
         g.fillStyle = white;
         g.fillRect(0, whiteLineY, width, whiteLineHeight);
 
@@ -84,7 +86,7 @@ export class StickerQrService {
         g.fillStyle = white;
         g.textAlign = 'center';
         g.textBaseline = 'middle';
-        g.font = `bold ${Math.round(headerH * 0.28)}px Arial`;
+        g.font = `bold ${Math.round(headerH * 0.20)}px Arial`;
         const [line1, line2] = headerText.split('\n');
         g.fillText(line1, width / 2, headerH * 0.40);
         g.fillText(line2, width / 2, headerH * 0.78);
@@ -112,10 +114,16 @@ export class StickerQrService {
 
     formatCodeNumber(code: string): string {
         const clean = (code || '').trim();
+
+        // Pastikan tetap harus 12 digit
         if (/^\d{12}$/.test(clean)) {
-            // Ubah format dari "111 111 111 111" → "111/111/111/111"
-            return clean.replace(/(\d{3})(\d{3})(\d{3})(\d{3})/, '$1/$2/$3/$4');
+            // Format: 3 - 3 - 2 - 1 - 3
+            return clean.replace(
+                /(\d{3})(\d{3})(\d{2})(\d{1})(\d{3})/,
+                '$1 $2 $3 $4 $5'
+            );
         }
         return clean;
     }
+
 }

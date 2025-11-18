@@ -94,8 +94,8 @@ ${codeNumber}`
         g.fillRect(0, 0, width, headerH);
 
         // Garis putih sedikit di bawah area biru
-        const whiteLineHeight = 7;
-        const whiteLineY = headerH - Math.round(whiteLineHeight * 0.5);
+        const whiteLineHeight = 14;
+        const whiteLineY = headerH - Math.round(whiteLineHeight * 0.8);
         g.fillStyle = white;
         g.fillRect(0, whiteLineY, width, whiteLineHeight);
 
@@ -109,8 +109,8 @@ ${codeNumber}`
         g.textBaseline = 'middle';
         g.font = `bold ${Math.round(headerH * 0.20)}px Arial`;
         const [line1, line2] = headerText.split('\n');
-        g.fillText(line1, width / 2, headerH * 0.40);
-        g.fillText(line2, width / 2, headerH * 0.78);
+        g.fillText(line1, width / 2, headerH * 0.32);
+        g.fillText(line2, width / 2, headerH * 0.55);
 
         // Posisi dan ukuran QR
         const qrTargetSize = Math.round(width * 0.65);

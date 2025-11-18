@@ -15,22 +15,43 @@ export interface AssetPayload {
 @Injectable({ providedIn: 'root' })
 export class StickerQrService {
     buildPayload(p: AssetPayload): string {
-        const ordered: AssetPayload = {
-            codeGa: p.codeGa?.trim(),
-            assetName: p.assetName?.trim(),
-            specification: p.specification?.trim(),
-            colour: p.colour?.trim(),
-            date: p.date?.trim(),
-            user: p.user?.trim(),
-            location: p.location?.trim(),
-            emailOfficeActivation: p.emailOfficeActivation?.trim(),
-            codeNumber: p.codeNumber?.trim(),
-        };
-        const pretty = JSON.stringify(ordered, null, 2)
-            .replace(/^{\n/, '')    // hapus `{` di awal
-            .replace(/\n}$/, '');   // hapus `}` di akhir
-        return pretty;
+        const codeGa = p.codeGa?.trim() || '';
+        const assetName = p.assetName?.trim() || '';
+        const specification = p.specification?.trim() || '';
+        const colour = p.colour?.trim() || '';
+        const date = p.date?.trim() || '';
+        const user = p.user?.trim() || '';
+        const location = p.location?.trim() || '';
+        const email = p.emailOfficeActivation?.trim() || '';
+        const codeNumber = p.codeNumber?.trim() || '';
+
+        return (
+            `${codeGa}
+
+${assetName}
+
+Spesification : ${specification}
+
+Colour :
+${colour}
+
+Years :
+${date}
+
+User :
+${user}
+
+Location :
+${location}
+
+E-Mail Office Activation :
+${email}
+
+Code Number :
+${codeNumber}`
+        );
     }
+
 
     downloadCanvasPng(canvas: HTMLCanvasElement, filename: string) {
         const url = canvas.toDataURL('image/png');
@@ -115,15 +136,14 @@ export class StickerQrService {
     formatCodeNumber(code: string): string {
         const clean = (code || '').trim();
 
-        // Pastikan tetap harus 12 digit
-        if (/^\d{12}$/.test(clean)) {
-            // Format: 3 - 3 - 2 - 1 - 3
+        if (clean.length === 12) {
             return clean.replace(
-                /(\d{3})(\d{3})(\d{2})(\d{1})(\d{3})/,
+                /(.{3})(.{3})(.{2})(.{1})(.{3})/,
                 '$1 $2 $3 $4 $5'
             );
         }
         return clean;
     }
+
 
 }

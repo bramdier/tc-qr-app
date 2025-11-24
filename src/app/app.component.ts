@@ -68,14 +68,25 @@ export class AppComponent implements AfterViewInit {
   downloadStickerPng() {
     const canvas = this.findQrCanvas();
     if (!canvas) return;
+
     const code = this.form.get('codeNumber')?.value || 'sticker';
-    const sticker = this.svc.composeStickerPng(canvas, code as string, {
-      width: 295,
-      height: 413,
-      headerText: 'PROPERTY OF\nTRANS CONTINENT',
-    });
-    this.svc.downloadCanvasPng(sticker, `sticker-${code}.png`);
+
+    const logo = new Image();
+    logo.src = 'assets/logo.png'; // <-- logo kamu
+
+    logo.onload = () => {
+      const sticker = this.svc.composeStickerPng(canvas, code, {
+        width: 295,
+        height: 413,
+        headerText: 'PROPERTY OF\nTRANS CONTINENT',
+        logoImage: logo
+      });
+
+      this.svc.downloadCanvasPng(sticker, `sticker-${code}.png`);
+    };
   }
+
+
 
   private findQrCanvas(): HTMLCanvasElement | null {
     const host = this.qrHost?.nativeElement;

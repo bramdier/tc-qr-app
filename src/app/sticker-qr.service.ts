@@ -9,11 +9,12 @@ export interface AssetPayload {
     user: string;
     location: string;
     emailOfficeActivation: string;
-    codeNumber: string; // 12-digit string
+    codeNumber: string;
 }
 
 @Injectable({ providedIn: 'root' })
 export class StickerQrService {
+
     buildPayload(p: AssetPayload): string {
         const codeGa = p.codeGa?.trim() || '';
         const assetName = p.assetName?.trim() || '';
@@ -52,7 +53,6 @@ ${codeNumber}`
         );
     }
 
-
     downloadCanvasPng(canvas: HTMLCanvasElement, filename: string) {
         const url = canvas.toDataURL('image/png');
         this.downloadDataUrl(url, filename.endsWith('.png') ? filename : `${filename}.png`);
@@ -69,7 +69,7 @@ ${codeNumber}`
     composeStickerPng(
         qrCanvas: HTMLCanvasElement,
         codeNumber: string,
-        opts?: { width?: number; height?: number; headerText?: string }
+        opts?: { width?: number; height?: number; headerText?: string; logoImage?: HTMLImageElement }
     ): HTMLCanvasElement {
         const width = opts?.width ?? 600;
         const height = opts?.height ?? 840;
@@ -93,17 +93,18 @@ ${codeNumber}`
         g.fillStyle = blue;
         g.fillRect(0, 0, width, headerH);
 
-        // Garis putih sedikit di bawah area biru
+        // Garis putih
         const whiteLineHeight = 14;
         const whiteLineY = headerH - Math.round(whiteLineHeight * 0.8);
         g.fillStyle = white;
         g.fillRect(0, whiteLineY, width, whiteLineHeight);
 
-        // Background merah mulai setelah garis putih
+        // Background merah
         const redStartY = whiteLineY + whiteLineHeight;
         g.fillStyle = red;
         g.fillRect(0, redStartY, width, height - redStartY);
 
+        // Header text
         g.fillStyle = white;
         g.textAlign = 'center';
         g.textBaseline = 'middle';
@@ -112,26 +113,49 @@ ${codeNumber}`
         g.fillText(line1, width / 2, headerH * 0.32);
         g.fillText(line2, width / 2, headerH * 0.55);
 
-        // Posisi dan ukuran QR
+        // QR CODE
         const qrTargetSize = Math.round(width * 0.65);
         const qrX = Math.round((width - qrTargetSize) / 2);
-
-        // Turunkan QR code sedikit (misal dari 12% → 16% area)
         const qrY = Math.round(headerH + (bodyH - footerH) * 0.16);
+
         g.drawImage(qrCanvas, qrX, qrY, qrTargetSize, qrTargetSize);
 
-        // Posisi teks kode di bawah QR, juga sedikit diturunkan
+        // ====== LOGO DI TENGAH QR CODE ======
+        // ====== LOGO DI TENGAH QR CODE ======
+        if (opts?.logoImage) {
+            const logoSize = Math.round(qrTargetSize * 0.28);
+            const logoX = qrX + Math.round((qrTargetSize - logoSize) / 2);
+            const logoY = qrY + Math.round((qrTargetSize - logoSize) / 2);
+
+            // Padding lebih kecil (dari 20% → 8%)
+            const padding = Math.round(logoSize * 0.08);
+
+            // Background putih semi-transparan
+            g.fillStyle = 'rgba(255,255,255,0.75)';   // 75% opacity
+            g.fillRect(
+                logoX - padding,
+                logoY - padding,
+                logoSize + padding * 2,
+                logoSize + padding * 2
+            );
+
+            // Logo
+            g.drawImage(opts.logoImage, logoX, logoY, logoSize, logoSize);
+        }
+
+
+        // Code Number text
         g.fillStyle = white;
         g.textAlign = 'center';
         g.textBaseline = 'alphabetic';
         g.font = `bold ${Math.round(height * 0.055)}px Arial`;
 
-        const codeY = qrY + qrTargetSize + Math.round(height * 0.085); // sebelumnya 0.065
+        const codeY = qrY + qrTargetSize + Math.round(height * 0.085);
         g.fillText(this.formatCodeNumber(codeNumber), width / 2, codeY);
-
 
         return out;
     }
+
 
     formatCodeNumber(code: string): string {
         const clean = (code || '').trim();
@@ -144,6 +168,4 @@ ${codeNumber}`
         }
         return clean;
     }
-
-
 }

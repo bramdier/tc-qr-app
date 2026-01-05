@@ -120,28 +120,6 @@ ${codeNumber}`
 
         g.drawImage(qrCanvas, qrX, qrY, qrTargetSize, qrTargetSize);
 
-        // ====== LOGO DI TENGAH QR CODE ======
-        // ====== LOGO DI TENGAH QR CODE ======
-        if (opts?.logoImage) {
-            const logoSize = Math.round(qrTargetSize * 0.28);
-            const logoX = qrX + Math.round((qrTargetSize - logoSize) / 2);
-            const logoY = qrY + Math.round((qrTargetSize - logoSize) / 2);
-
-            // Padding lebih kecil (dari 20% → 8%)
-            const padding = Math.round(logoSize * 0.08);
-
-            // Background putih semi-transparan
-            g.fillStyle = 'rgba(255,255,255,0.75)';   // 75% opacity
-            g.fillRect(
-                logoX - padding,
-                logoY - padding,
-                logoSize + padding * 2,
-                logoSize + padding * 2
-            );
-
-            // Logo
-            g.drawImage(opts.logoImage, logoX, logoY, logoSize, logoSize);
-        }
 
 
         // Code Number text

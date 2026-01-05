@@ -35,7 +35,7 @@ export class AppComponent implements AfterViewInit {
     user: ['', Validators.required],
     location: ['', Validators.required],
     emailOfficeActivation: ['', [Validators.required, Validators.email]],
-    codeNumber: ['', [Validators.required, Validators.pattern(/^\d{12}$/)]],
+    codeNumber: ['', [Validators.required, Validators.pattern(/^.{12}$/)]],
   });
 
   qrPayload = this.svc.buildPayload({
@@ -71,19 +71,13 @@ export class AppComponent implements AfterViewInit {
 
     const code = this.form.get('codeNumber')?.value || 'sticker';
 
-    const logo = new Image();
-    logo.src = 'assets/logo.png'; // <-- logo kamu
+    const sticker = this.svc.composeStickerPng(canvas, code, {
+      width: 295,
+      height: 413,
+      headerText: 'PROPERTY OF\nTRANS CONTINENT'
+    });
 
-    logo.onload = () => {
-      const sticker = this.svc.composeStickerPng(canvas, code, {
-        width: 295,
-        height: 413,
-        headerText: 'PROPERTY OF\nTRANS CONTINENT',
-        logoImage: logo
-      });
-
-      this.svc.downloadCanvasPng(sticker, `sticker-${code}.png`);
-    };
+    this.svc.downloadCanvasPng(sticker, `sticker-${code}.png`);
   }
 
 

@@ -1,293 +1,309 @@
-<div class="app-container">
-  <header class="app-header">
-    <h1 class="app-title">{{ title }}</h1>
-    <p class="app-subtitle">Generate QR codes and asset stickers for Trans Continent assets</p>
-  </header>
+<div class="layout">
 
-  <main class="app-main">
-    <section class="form-section">
-      <div class="card">
-        <div class="card-header">
-          <h2 class="card-title">Asset Information</h2>
-          <p class="card-description">Fill in the details below to generate your QR code</p>
+  <!-- Left Panel: Form -->
+  <div class="panel panel--form">
+    <div class="panel-inner">
+
+      <header class="app-header">
+        <div class="brand">
+          <div class="brand-logo">TC</div>
+          <div class="brand-text">
+            <span class="brand-title">Asset QR Generator</span>
+            <span class="brand-sub">Trans Continent</span>
+          </div>
         </div>
-        
-        <form [formGroup]="form" class="asset-form">
-          <div class="form-group">
-            <label for="codeGa" class="form-label">
-              <span class="label-text">GA Code</span>
-              <span class="required-indicator" aria-label="required">*</span>
+      </header>
+
+      <!-- Template toolbar -->
+      <div class="template-toolbar">
+        <button type="button" class="tbtn tbtn--ghost" (click)="downloadTemplate()" aria-label="Download JSON template">
+          <svg class="tbtn-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+          Download Template
+        </button>
+
+        <button type="button" class="tbtn tbtn--accent" (click)="triggerUpload()" aria-label="Upload filled JSON template">
+          <svg class="tbtn-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm6.707-12.707a1 1 0 00-1.414 0l-3 3a1 1 0 101.414 1.414L9 7.414V15a1 1 0 102 0V7.414l2.293 2.293a1 1 0 001.414-1.414l-3-3z" clip-rule="evenodd" />
+          </svg>
+          Upload &amp; Fill
+        </button>
+
+        <input
+          #fileInput
+          type="file"
+          accept=".json,application/json"
+          class="file-input-hidden"
+          (change)="onFileSelected($event)"
+          aria-label="Upload JSON template file"
+        />
+      </div>
+
+      <div class="upload-error" *ngIf="uploadError" role="alert">
+        {{ uploadError }}
+      </div>
+
+      <form [formGroup]="form" class="asset-form" novalidate>
+
+        <!-- Group 1: Identification -->
+        <fieldset class="form-group-set">
+          <legend class="group-label">Identification</legend>
+
+          <div class="field">
+            <label for="codeGa" class="field-label">
+              GA Code <span class="req" aria-label="required">*</span>
             </label>
             <input
               id="codeGa"
               type="text"
               formControlName="codeGa"
-              class="form-input"
+              class="field-input"
+              placeholder="e.g. GA-001"
+              autocomplete="off"
               aria-required="true"
-              aria-describedby="codeGa-error"
+              aria-describedby="codeGa-err"
             />
-            <span
-              id="codeGa-error"
-              class="error-message"
-              *ngIf="form.get('codeGa')?.invalid && form.get('codeGa')?.touched"
-              role="alert"
-            >
+            <span id="codeGa-err" class="field-error"
+              *ngIf="form.get('codeGa')?.invalid && form.get('codeGa')?.touched" role="alert">
               GA Code is required
             </span>
           </div>
 
-          <div class="form-group">
-            <label for="assetName" class="form-label">
-              <span class="label-text">Asset Name</span>
-              <span class="required-indicator" aria-label="required">*</span>
-            </label>
-            <input
-              id="assetName"
-              type="text"
-              formControlName="assetName"
-              class="form-input"
-              aria-required="true"
-              aria-describedby="assetName-error"
-            />
-            <span
-              id="assetName-error"
-              class="error-message"
-              *ngIf="form.get('assetName')?.invalid && form.get('assetName')?.touched"
-              role="alert"
-            >
-              Asset Name is required
-            </span>
-          </div>
-
-          <div class="form-group form-group-full">
-            <label for="specification" class="form-label">
-              <span class="label-text">Specification</span>
-              <span class="required-indicator" aria-label="required">*</span>
-            </label>
-            <textarea
-              id="specification"
-              rows="4"
-              formControlName="specification"
-              class="form-input form-textarea"
-              aria-required="true"
-              aria-describedby="specification-error"
-            ></textarea>
-            <span
-              id="specification-error"
-              class="error-message"
-              *ngIf="form.get('specification')?.invalid && form.get('specification')?.touched"
-              role="alert"
-            >
-              Specification is required
-            </span>
-          </div>
-
-          <div class="form-group">
-            <label for="colour" class="form-label">
-              <span class="label-text">Colour</span>
-              <span class="required-indicator" aria-label="required">*</span>
-            </label>
-            <input
-              id="colour"
-              type="text"
-              formControlName="colour"
-              class="form-input"
-              aria-required="true"
-              aria-describedby="colour-error"
-            />
-            <span
-              id="colour-error"
-              class="error-message"
-              *ngIf="form.get('colour')?.invalid && form.get('colour')?.touched"
-              role="alert"
-            >
-              Colour is required
-            </span>
-          </div>
-
-          <div class="form-group">
-            <label for="date" class="form-label">
-              <span class="label-text">Date</span>
-              <span class="required-indicator" aria-label="required">*</span>
-            </label>
-            <input
-              id="date"
-              type="text"
-              placeholder="YYYY-MM-DD or any string"
-              formControlName="date"
-              class="form-input"
-              aria-required="true"
-              aria-describedby="date-error"
-            />
-            <span
-              id="date-error"
-              class="error-message"
-              *ngIf="form.get('date')?.invalid && form.get('date')?.touched"
-              role="alert"
-            >
-              Date is required
-            </span>
-          </div>
-
-          <div class="form-group">
-            <label for="user" class="form-label">
-              <span class="label-text">User</span>
-              <span class="required-indicator" aria-label="required">*</span>
-            </label>
-            <input
-              id="user"
-              type="text"
-              formControlName="user"
-              class="form-input"
-              aria-required="true"
-              aria-describedby="user-error"
-            />
-            <span
-              id="user-error"
-              class="error-message"
-              *ngIf="form.get('user')?.invalid && form.get('user')?.touched"
-              role="alert"
-            >
-              User is required
-            </span>
-          </div>
-
-          <div class="form-group">
-            <label for="location" class="form-label">
-              <span class="label-text">Location</span>
-              <span class="required-indicator" aria-label="required">*</span>
-            </label>
-            <input
-              id="location"
-              type="text"
-              formControlName="location"
-              class="form-input"
-              aria-required="true"
-              aria-describedby="location-error"
-            />
-            <span
-              id="location-error"
-              class="error-message"
-              *ngIf="form.get('location')?.invalid && form.get('location')?.touched"
-              role="alert"
-            >
-              Location is required
-            </span>
-          </div>
-
-          <div class="form-group form-group-full">
-            <label for="emailOfficeActivation" class="form-label">
-              <span class="label-text">E-Mail Office Activation</span>
-              <span class="required-indicator" aria-label="required">*</span>
-            </label>
-            <input
-              id="emailOfficeActivation"
-              type="email"
-              formControlName="emailOfficeActivation"
-              class="form-input"
-              aria-required="true"
-              aria-describedby="emailOfficeActivation-error"
-            />
-            <span
-              id="emailOfficeActivation-error"
-              class="error-message"
-              *ngIf="form.get('emailOfficeActivation')?.invalid && form.get('emailOfficeActivation')?.touched"
-              role="alert"
-            >
-              <span *ngIf="form.get('emailOfficeActivation')?.errors?.['required']">Email is required</span>
-              <span *ngIf="form.get('emailOfficeActivation')?.errors?.['email']">Please enter a valid email address</span>
-            </span>
-          </div>
-
-          <div class="form-group form-group-full">
-            <label for="codeNumber" class="form-label">
-              <span class="label-text">Code Number</span>
-              <span class="required-indicator" aria-label="required">*</span>
-              <span class="label-hint">12 characters</span>
+          <div class="field">
+            <label for="codeNumber" class="field-label">
+              Code Number <span class="req" aria-label="required">*</span>
+              <span class="field-hint">12 characters</span>
             </label>
             <input
               id="codeNumber"
               type="text"
               formControlName="codeNumber"
               maxlength="12"
-              class="form-input"
+              class="field-input field-input--mono"
+              placeholder="e.g. ABC123456789"
+              autocomplete="off"
               aria-required="true"
-              aria-describedby="codeNumber-error codeNumber-hint"
+              aria-describedby="codeNumber-err"
             />
-            <span
-              id="codeNumber-hint"
-              class="form-hint"
-            >
-              Enter exactly 12 characters
-            </span>
-            <span
-              id="codeNumber-error"
-              class="error-message"
-              *ngIf="form.get('codeNumber')?.invalid && form.get('codeNumber')?.touched"
-              role="alert"
-            >
+            <span id="codeNumber-err" class="field-error"
+              *ngIf="form.get('codeNumber')?.invalid && form.get('codeNumber')?.touched" role="alert">
               Must be exactly 12 characters
             </span>
           </div>
-        </form>
-      </div>
-    </section>
+        </fieldset>
 
-    <section class="preview-section">
-      <div class="card">
-        <div class="card-header">
-          <h2 class="card-title">QR Code Preview</h2>
-        </div>
-        <div class="preview-content">
-          <div class="qr-container" #qrHost>
-            <qrcode
-              [qrdata]="qrPayload"
-              [elementType]="'canvas'"
-              [width]="300"
-              [errorCorrectionLevel]="'M'"
-              [margin]="1"
-              [colorDark]="'#000000'"
-              [colorLight]="'#FFFFFF'">
-            </qrcode>
+        <!-- Group 2: Asset Details -->
+        <fieldset class="form-group-set">
+          <legend class="group-label">Asset Details</legend>
+
+          <div class="field field--full">
+            <label for="assetName" class="field-label">
+              Asset Name <span class="req" aria-label="required">*</span>
+            </label>
+            <input
+              id="assetName"
+              type="text"
+              formControlName="assetName"
+              class="field-input"
+              placeholder="e.g. Laptop Dell XPS 15"
+              autocomplete="off"
+              aria-required="true"
+              aria-describedby="assetName-err"
+            />
+            <span id="assetName-err" class="field-error"
+              *ngIf="form.get('assetName')?.invalid && form.get('assetName')?.touched" role="alert">
+              Asset Name is required
+            </span>
           </div>
 
-          <div class="payload-container">
-            <h3 class="payload-title">QR Payload</h3>
-            <div class="payload-content">
-              <pre class="payload-text" aria-label="QR code payload">{{ qrPayload }}</pre>
-            </div>
-            <p class="validation-hint" *ngIf="form.invalid" role="alert">
-              <span class="hint-icon">⚠</span>
-              Form has validation errors. QR code updates in real-time, but please fix errors before printing.
-            </p>
+          <div class="field field--full">
+            <label for="specification" class="field-label">
+              Specification <span class="req" aria-label="required">*</span>
+            </label>
+            <textarea
+              id="specification"
+              rows="3"
+              formControlName="specification"
+              class="field-input field-textarea"
+              placeholder="e.g. Intel Core i7, 16GB RAM, 512GB SSD"
+              aria-required="true"
+              aria-describedby="specification-err"
+            ></textarea>
+            <span id="specification-err" class="field-error"
+              *ngIf="form.get('specification')?.invalid && form.get('specification')?.touched" role="alert">
+              Specification is required
+            </span>
           </div>
-        </div>
-      </div>
-    </section>
 
-    <section class="actions-section">
-      <div class="actions-container">
+          <div class="field">
+            <label for="colour" class="field-label">
+              Colour <span class="req" aria-label="required">*</span>
+            </label>
+            <input
+              id="colour"
+              type="text"
+              formControlName="colour"
+              class="field-input"
+              placeholder="e.g. Space Grey"
+              autocomplete="off"
+              aria-required="true"
+              aria-describedby="colour-err"
+            />
+            <span id="colour-err" class="field-error"
+              *ngIf="form.get('colour')?.invalid && form.get('colour')?.touched" role="alert">
+              Colour is required
+            </span>
+          </div>
+
+          <div class="field">
+            <label for="date" class="field-label">
+              Year / Date <span class="req" aria-label="required">*</span>
+            </label>
+            <input
+              id="date"
+              type="text"
+              formControlName="date"
+              class="field-input"
+              placeholder="YYYY or YYYY-MM-DD"
+              autocomplete="off"
+              aria-required="true"
+              aria-describedby="date-err"
+            />
+            <span id="date-err" class="field-error"
+              *ngIf="form.get('date')?.invalid && form.get('date')?.touched" role="alert">
+              Date is required
+            </span>
+          </div>
+        </fieldset>
+
+        <!-- Group 3: Assignment -->
+        <fieldset class="form-group-set">
+          <legend class="group-label">Assignment</legend>
+
+          <div class="field">
+            <label for="user" class="field-label">
+              User <span class="req" aria-label="required">*</span>
+            </label>
+            <input
+              id="user"
+              type="text"
+              formControlName="user"
+              class="field-input"
+              placeholder="Full name"
+              autocomplete="name"
+              aria-required="true"
+              aria-describedby="user-err"
+            />
+            <span id="user-err" class="field-error"
+              *ngIf="form.get('user')?.invalid && form.get('user')?.touched" role="alert">
+              User is required
+            </span>
+          </div>
+
+          <div class="field">
+            <label for="location" class="field-label">
+              Location <span class="req" aria-label="required">*</span>
+            </label>
+            <input
+              id="location"
+              type="text"
+              formControlName="location"
+              class="field-input"
+              placeholder="e.g. Office – Jakarta"
+              autocomplete="off"
+              aria-required="true"
+              aria-describedby="location-err"
+            />
+            <span id="location-err" class="field-error"
+              *ngIf="form.get('location')?.invalid && form.get('location')?.touched" role="alert">
+              Location is required
+            </span>
+          </div>
+
+          <div class="field field--full">
+            <label for="emailOfficeActivation" class="field-label">
+              Office Activation Email <span class="req" aria-label="required">*</span>
+            </label>
+            <input
+              id="emailOfficeActivation"
+              type="email"
+              formControlName="emailOfficeActivation"
+              class="field-input"
+              placeholder="name@transcontinent.com"
+              autocomplete="email"
+              aria-required="true"
+              aria-describedby="email-err"
+            />
+            <span id="email-err" class="field-error"
+              *ngIf="form.get('emailOfficeActivation')?.invalid && form.get('emailOfficeActivation')?.touched" role="alert">
+              <span *ngIf="form.get('emailOfficeActivation')?.errors?.['required']">Email is required</span>
+              <span *ngIf="form.get('emailOfficeActivation')?.errors?.['email']">Enter a valid email address</span>
+            </span>
+          </div>
+        </fieldset>
+
+      </form>
+    </div>
+  </div>
+
+  <!-- Right Panel: Preview -->
+  <div class="panel panel--preview">
+    <div class="preview-sticky">
+
+      <div class="qr-block" #qrHost>
+        <qrcode
+          [qrdata]="qrPayload"
+          [elementType]="'canvas'"
+          [width]="240"
+          [errorCorrectionLevel]="'M'"
+          [margin]="1"
+          [colorDark]="'#000000'"
+          [colorLight]="'#ffffff'">
+        </qrcode>
+      </div>
+
+      <div class="code-display" *ngIf="form.get('codeNumber')?.value">
+        {{ form.get('codeNumber')?.value }}
+      </div>
+
+      <div class="payload-block">
+        <p class="payload-label">Encoded Data</p>
+        <pre class="payload-pre" aria-label="QR code payload">{{ qrPayload }}</pre>
+      </div>
+
+      <div class="warning-bar" *ngIf="form.invalid" role="alert">
+        Fix all required fields before downloading
+      </div>
+
+      <div class="action-bar">
         <button
           type="button"
-          class="btn btn-primary"
+          class="btn btn--primary"
           (click)="downloadQrPng()"
           [disabled]="form.invalid"
           aria-label="Download QR code as PNG"
         >
-          <span class="btn-icon">↓</span>
-          <span>Download QR PNG</span>
+          <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+          Download QR
         </button>
         <button
           type="button"
-          class="btn btn-secondary"
+          class="btn btn--secondary"
           (click)="downloadStickerPng()"
           [disabled]="form.invalid"
           aria-label="Download sticker as PNG"
         >
-          <span class="btn-icon">↓</span>
-          <span>Download Sticker PNG</span>
+          <svg class="btn-icon" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" />
+          </svg>
+          Download Sticker
         </button>
       </div>
-    </section>
-  </main>
+
+    </div>
+  </div>
+
 </div>

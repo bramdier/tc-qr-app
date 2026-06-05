@@ -48,7 +48,7 @@ export class AppComponent implements AfterViewInit {
     date: ['', Validators.required],
     user: ['', Validators.required],
     location: ['', Validators.required],
-    emailOfficeActivation: ['', [Validators.required, Validators.email]],
+    emailOfficeActivation: ['', Validators.email],
     codeNumber: ['', [Validators.required, Validators.pattern(/^.{12}$/)]],
   });
 

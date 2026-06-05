@@ -223,7 +223,7 @@
 
           <div class="field field--full">
             <label for="emailOfficeActivation" class="field-label">
-              Office Activation Email <span class="req" aria-label="required">*</span>
+              Office Activation Email
             </label>
             <input
               id="emailOfficeActivation"
@@ -232,13 +232,11 @@
               class="field-input"
               placeholder="name@transcontinent.com"
               autocomplete="email"
-              aria-required="true"
               aria-describedby="email-err"
             />
             <span id="email-err" class="field-error"
               *ngIf="form.get('emailOfficeActivation')?.invalid && form.get('emailOfficeActivation')?.touched" role="alert">
-              <span *ngIf="form.get('emailOfficeActivation')?.errors?.['required']">Email is required</span>
-              <span *ngIf="form.get('emailOfficeActivation')?.errors?.['email']">Enter a valid email address</span>
+              Enter a valid email address
             </span>
           </div>
         </fieldset>
